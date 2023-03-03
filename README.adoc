@@ -1,0 +1,16 @@
+= user-rhat-worker-id-labeler
+
+This operator provides a work-aroud for not being able to retrieve arbitrary claims through OpenID Connect and OpenShift oauth.
+
+A Script Mapper is configured in keycloak to combine the user name and rhatWorkerId into a single string:
+
+--------
+var userName = token.getOtherClaims().get("name");
+var rhatWorkerId = token.getOtherClaims().get("rhatWorkerId");
+var Output = userName + " [" + rhatWorkerId + "]";
+Output;
+--------
+
+For example: `Johnathan Kupferer [54703]`
+
+This utility watches OpenShift users and when they are an `@redhat.com` user with a display name of this form it will patch the user to put the rhatWorkerId in the label `redhat.com/rhatWorkerId` and remove it from the display name.

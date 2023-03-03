@@ -1,0 +1,61 @@
+{{- if .Values.deploy -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "userRhatWorkerIdLabeler.name" . }}
+  namespace: {{ include "userRhatWorkerIdLabeler.namespaceName" . }}
+  labels:
+    {{- include "userRhatWorkerIdLabeler.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "userRhatWorkerIdLabeler.selectorLabels" . | nindent 6 }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        {{- include "userRhatWorkerIdLabeler.selectorLabels" . | nindent 8 }}
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{ include "userRhatWorkerIdLabeler.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: operator
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ include "userRhatWorkerIdLabeler.image" . }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          livenessProbe:
+            failureThreshold: 5
+            initialDelaySeconds: 30
+            tcpSocket:
+              port: 8080
+            timeoutSeconds: 10
+          ports:
+          - name: metrics
+            containerPort: 8000
+      restartPolicy: Always
+      securityContext: {}
+      serviceAccountName: {{ include "userRhatWorkerIdLabeler.serviceAccountName" . }}
+      terminationGracePeriodSeconds: 30
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+{{- end -}}

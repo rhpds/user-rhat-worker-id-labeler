@@ -1,0 +1,35 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "userRhatWorkerIdLabeler.name" . }}
+  labels:
+    {{- include "userRhatWorkerIdLabeler.labels" . | nindent 4 }}
+rules:
+- apiGroups:
+  - user.openshift.io
+  resources:
+  - identities
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - user.openshift.io
+  resources:
+  - users
+  verbs:
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - ""
+  attributeRestrictions: null
+  resources:
+  - events
+  verbs:
+  - create
+  - patch
+  - update

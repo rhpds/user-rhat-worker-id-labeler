@@ -1,0 +1,25 @@
+---
+- name: Create User testuser@redhat.com
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: user.openshift.io/v1
+      fullName: Test User [123]
+      kind: User
+      metadata:
+        name: testuser@redhat.com
+      identities:
+      - sso-internal:testuser@redhat.com
+
+- name: Verify handling of testuser@redhat.com
+  kubernetes.core.k8s_info:
+    api_version: user.openshift.io/v1
+    kind: User
+    name: testuser@redhat.com
+  register: r_get_user
+  vars:
+    __user: "{{ r_get_user.resources[0] }}"
+  failed_when: >-
+    __user.fullName != 'Test User' or
+    __user.metadata.labels['redhat.com/rhatWorkerId'] != '123'
+  retries: 5
+  delay: 1

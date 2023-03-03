@@ -1,0 +1,11 @@
+---
+- name: Cleanup test users
+  kubernetes.core.k8s:
+    state: absent
+    api_version: user.openshift.io/v1
+    kind: User
+    name: "{{ __user_name }}"
+  loop:
+  - testuser@redhat.com
+  loop_control:
+    loop_var: __user_name
