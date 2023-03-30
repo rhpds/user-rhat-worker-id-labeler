@@ -21,7 +21,7 @@ class User:
 
     def __init__(self, definition):
         self.fullName = definition.get('fullName')
-        self.identities = definition.get('identities')
+        self.identities = definition.get('identities', [])
         self.metadata = definition['metadata']
 
     def __str__(self):
