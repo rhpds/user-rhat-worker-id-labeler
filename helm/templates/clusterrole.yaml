@@ -26,7 +26,6 @@ rules:
   - watch
 - apiGroups:
   - ""
-  attributeRestrictions: null
   resources:
   - events
   verbs:
