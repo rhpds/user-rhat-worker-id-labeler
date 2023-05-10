@@ -47,7 +47,6 @@ jobs:
       with:
         image: ${{ env.IMAGE_NAME }}
         tags: ${{ steps.image_tags.outputs.IMAGE_TAGS }}
-        context: agnosticv-operator
         containerfiles: Containerfile
 
     - name: Push image to registry
