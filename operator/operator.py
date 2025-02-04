@@ -1,9 +1,9 @@
-import kopf
-import kubernetes_asyncio
 import logging
 import os
 import re
 
+import kopf
+import kubernetes_asyncio
 from configure_kopf_logging import configure_kopf_logging
 from infinite_relative_backoff import InfiniteRelativeBackoff
 
@@ -52,18 +52,19 @@ class User:
         logger.info(f"Patching {self} with redhat.com/rhatWorkerId {rhatWorkerId}")
 
         await custom_objects_api.patch_cluster_custom_object(
-            group = 'user.openshift.io',
-            name = self.name,
-            plural = 'users',
-            version = 'v1',
-            body = {
+            group='user.openshift.io',
+            name=self.name,
+            plural='users',
+            version='v1',
+            body={
                 "fullName": fullName,
                 "metadata": {
                     "labels": {
                         "redhat.com/rhatWorkerId": rhatWorkerId,
                     }
                 }
-            }
+            },
+            _content_type='application/merge-patch+json'
         )
 
 
